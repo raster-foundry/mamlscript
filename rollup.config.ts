@@ -3,6 +3,8 @@ import commonjs from 'rollup-plugin-commonjs'
 import sourceMaps from 'rollup-plugin-sourcemaps'
 import camelCase from 'lodash.camelcase'
 import typescript from 'rollup-plugin-typescript2'
+import uglify from 'rollup-plugin-uglify';
+import builtins from 'rollup-plugin-node-builtins';
 
 const pkg = require('./package.json')
 
@@ -20,16 +22,23 @@ export default {
   watch: {
     include: 'src/**',
   },
+  globals: {
+    mathjs: 'math'
+  },
   plugins: [
     // Compile TypeScript files
     typescript(),
     // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
     commonjs(),
+    builtins(),
     // Allow node_modules resolution, so you can use 'external' to control
     // which external modules to include in the bundle
     // https://github.com/rollup/rollup-plugin-node-resolve#usage
-    resolve(),
-
+    resolve({
+      browser: true
+    }),
+    // Uglify
+    uglify(),
     // Resolve source maps to the original source
     sourceMaps(),
   ],

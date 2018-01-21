@@ -17,6 +17,7 @@ export abstract class Node {
       label: ''
     }
   }
+
   toString(): string {
     return JSON.stringify(this)
   }
