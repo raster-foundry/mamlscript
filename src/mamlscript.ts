@@ -34,14 +34,13 @@ export class ExpressionParser {
     return this.transformMathNode(math.parse(expression))
   }
 
-  findSymbolByLabel(label: string): any {
-    return this.symbols.find(
-      s => s instanceof Constant && s.metadata.label === label
+  getMatchingSymbol<T extends Leaf>(
+    node: T,
+    constructor: { new (...args: any[]): T }
+  ): T {
+    const matching = this.symbols.find(
+      s => s instanceof constructor && s.metadata.label === node.metadata.label
     )
-  }
-
-  getMatchingSymbol(node: any) {
-    const matching = this.findSymbolByLabel(node.metadata.label)
     // If a matching constant is found return it
     if (matching) {
       return matching
@@ -77,7 +76,7 @@ export class ExpressionParser {
   }
 
   sourceFromMathNode(node: any): Source {
-    return this.getMatchingSymbol(new Source(node.name))
+    return this.getMatchingSymbol(new Source(node.name), Source)
   }
 
   constantFromMathNode(node: any): Constant {
@@ -87,11 +86,15 @@ export class ExpressionParser {
     } else if (node.type === 'AssignmentNode') {
       // The incoming mathjs node is an assignment (constant w/ default)
       return this.getMatchingSymbol(
-        new Constant(node.object.name.substring(1), +node.value.value)
+        new Constant(node.object.name.substring(1), +node.value.value),
+        Constant
       )
     }
     // The incoming mathjs node is a plain constant
-    return this.getMatchingSymbol(new Constant(node.name.substring(1), null))
+    return this.getMatchingSymbol(
+      new Constant(node.name.substring(1), null),
+      Constant
+    )
   }
 
   operationFromMathNode(node: any, collapseable: boolean = true): Operation {
