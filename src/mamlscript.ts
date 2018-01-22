@@ -29,6 +29,55 @@ export abstract class Leaf extends Node {
 export class ExpressionParser {
   symbols: any[] = []
 
+  validOps: string[] = [
+    '+',
+    '-',
+    '*',
+    '/',
+    '==',
+    '!=',
+    '>',
+    '<',
+    '>=',
+    '<=',
+    'and',
+    'or',
+    'xor',
+    '^',
+    'sqrt',
+    'log10',
+    'ceil',
+    'floor',
+    'round',
+    'abs',
+    'sin',
+    'cos',
+    'tan',
+    'asin',
+    'acos',
+    'atan',
+    'sinh',
+    'cosh',
+    'tanh',
+    'atan2',
+    'classify'
+  ]
+
+  advancedOps: {
+    [key: string]: (node: any) => Operation
+  } = {
+    classify: (node: any) => {
+      const args = [node.args[0]]
+      const classifications = this.classificationsFromObjectNode(node.args[1])
+      let op = new Operation(
+        node.fn.name,
+        args.map(a => this.transformMathNode(a))
+      )
+      op.classMap = { classifications }
+      return op
+    }
+  }
+
   parse(expression: string): any {
     this.symbols = []
     return this.transformMathNode(math.parse(expression))
@@ -98,61 +147,9 @@ export class ExpressionParser {
   }
 
   operationFromMathNode(node: any, collapseable: boolean = true): Operation {
-    // Runtime errors will be thrown for operations not in the list
-    const validOps = [
-      '+',
-      '-',
-      '*',
-      '/',
-      '==',
-      '!=',
-      '>',
-      '<',
-      '>=',
-      '<=',
-      'and',
-      'or',
-      'xor',
-      '^',
-      'sqrt',
-      'log10',
-      'ceil',
-      'floor',
-      'round',
-      'abs',
-      'sin',
-      'cos',
-      'tan',
-      'asin',
-      'acos',
-      'atan',
-      'sinh',
-      'cosh',
-      'tanh',
-      'atan2',
-      'classify'
-    ]
-
-    // The following operations require special handling which is defined
-    // in the `advancedOperationFromMathNode` function
-    const advancedOps: {
-      [key: string]: (node: any) => Operation
-    } = {
-      classify: (node: any) => {
-        const args = [node.args[0]]
-        const classifications = this.classificationsFromObjectNode(node.args[1])
-        let op = new Operation(
-          node.fn.name,
-          args.map(a => this.transformMathNode(a))
-        )
-        op.classMap = { classifications }
-        return op
-      }
-    }
-
     // Both OperatorNode and FunctionNode MathJS node types get converted to
     // MAML Operations.
-    if (node.type === 'OperatorNode' && validOps.indexOf(node.op) >= 0) {
+    if (node.type === 'OperatorNode' && this.validOps.indexOf(node.op) >= 0) {
       let args = node.args.map((a: any) => this.transformMathNode(a))
       // If the operations is collapseable, check arguments to find suitable nodes
       // for merging
@@ -168,10 +165,10 @@ export class ExpressionParser {
       return new Operation(node.op, args, collapseable)
     } else if (
       node.type === 'FunctionNode' &&
-      validOps.indexOf(node.fn.name) >= 0
+      this.validOps.indexOf(node.fn.name) >= 0
     ) {
-      if (advancedOps.hasOwnProperty(node.fn.name)) {
-        return advancedOps[node.fn.name](node)
+      if (this.advancedOps.hasOwnProperty(node.fn.name)) {
+        return this.advancedOps[node.fn.name](node)
       }
       return new Operation(
         node.fn.name,
