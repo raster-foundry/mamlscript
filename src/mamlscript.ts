@@ -1,5 +1,5 @@
-import * as math from 'mathjs'
 import uuidv4 from 'uuid/v4'
+import { Parser } from './parser'
 
 export interface Metadata {
   label: string
@@ -79,8 +79,9 @@ export class ExpressionParser {
   }
 
   parse(expression: string): any {
+    const parser = new Parser()
     this.symbols = []
-    return this.transformMathNode(math.parse(expression))
+    return parser.parse(expression)
   }
 
   getMatchingSymbol<T extends Leaf>(
