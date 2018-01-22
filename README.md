@@ -1,4 +1,8 @@
 # mamlscript
+[![Build Status](https://travis-ci.org/raster-foundry/mamlscript.svg?branch=master)](https://travis-ci.org/raster-foundry/mamlscript)
+
+[![Maintainability](https://api.codeclimate.com/v1/badges/9e498dd542a5551089f0/maintainability)](https://codeclimate.com/github/raster-foundry/mamlscript/maintainability)
+
 
 ### NPM scripts
 
