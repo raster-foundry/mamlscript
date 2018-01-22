@@ -146,23 +146,29 @@ export class ExpressionParser {
     )
   }
 
+  transformOperatorArgs(node: any) {
+    let args = node.args.map((a: any) => this.transformMathNode(a))
+    args.forEach((a: any, i: number) => {
+      if (a instanceof Operation && a.apply === node.op && a.collapseable) {
+        args = [
+          ...args.slice(0, i),
+          ...a.args,
+          ...args.slice(i + 1, args.length)
+        ]
+      }
+    })
+    return args
+  }
+
   operationFromMathNode(node: any, collapseable: boolean = true): Operation {
     // Both OperatorNode and FunctionNode MathJS node types get converted to
     // MAML Operations.
     if (node.type === 'OperatorNode' && this.validOps.indexOf(node.op) >= 0) {
-      let args = node.args.map((a: any) => this.transformMathNode(a))
-      // If the operations is collapseable, check arguments to find suitable nodes
-      // for merging
-      args.forEach((a: any, i: number) => {
-        if (a instanceof Operation && a.apply === node.op && a.collapseable) {
-          args = [
-            ...args.slice(0, i),
-            ...a.args,
-            ...args.slice(i + 1, args.length)
-          ]
-        }
-      })
-      return new Operation(node.op, args, collapseable)
+      return new Operation(
+        node.op,
+        this.transformOperatorArgs(node),
+        collapseable
+      )
     } else if (
       node.type === 'FunctionNode' &&
       this.validOps.indexOf(node.fn.name) >= 0
