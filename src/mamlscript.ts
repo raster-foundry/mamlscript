@@ -34,28 +34,19 @@ export class ExpressionParser {
     return this.transformMathNode(math.parse(expression))
   }
 
-  getMatchingConstant(node: Constant): Constant {
-    const matching = this.symbols.find(
-      s => s instanceof Constant && s.metadata.label === node.metadata.label
+  findSymbolByLabel(label: string): any {
+    return this.symbols.find(
+      s => s instanceof Constant && s.metadata.label === label
     )
+  }
+
+  getMatchingSymbol(node: any) {
+    const matching = this.findSymbolByLabel(node.metadata.label)
     // If a matching constant is found return it
     if (matching) {
       return matching
     }
     // Otherwise, add the unique constant to the list
-    this.symbols.push(node)
-    return node
-  }
-
-  getMatchingSource(node: Source): Source {
-    const matching = this.symbols.find(
-      s => s instanceof Source && s.metadata.label === node.metadata.label
-    )
-    // If a matching source is found return it
-    if (matching) {
-      return matching
-    }
-    // Otherwise, add the unique source to the list
     this.symbols.push(node)
     return node
   }
@@ -86,7 +77,7 @@ export class ExpressionParser {
   }
 
   sourceFromMathNode(node: any): Source {
-    return this.getMatchingSource(new Source(node.name))
+    return this.getMatchingSymbol(new Source(node.name))
   }
 
   constantFromMathNode(node: any): Constant {
@@ -95,12 +86,12 @@ export class ExpressionParser {
       return new Constant(node.value, node.value)
     } else if (node.type === 'AssignmentNode') {
       // The incoming mathjs node is an assignment (constant w/ default)
-      return this.getMatchingConstant(
+      return this.getMatchingSymbol(
         new Constant(node.object.name.substring(1), +node.value.value)
       )
     }
     // The incoming mathjs node is a plain constant
-    return this.getMatchingConstant(new Constant(node.name.substring(1), null))
+    return this.getMatchingSymbol(new Constant(node.name.substring(1), null))
   }
 
   operationFromMathNode(node: any, collapseable: boolean = true): Operation {
