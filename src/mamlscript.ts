@@ -1,5 +1,6 @@
 import uuidv4 from 'uuid/v4'
 import { Parser } from './parser'
+import { ops } from './builtins'
 
 export interface Metadata {
   label: string
@@ -28,40 +29,6 @@ export abstract class Leaf extends Node {
 
 export class ExpressionParser {
   symbols: any[] = []
-
-  validOps: string[] = [
-    '+',
-    '-',
-    '*',
-    '/',
-    '==',
-    '!=',
-    '>',
-    '<',
-    '>=',
-    '<=',
-    'and',
-    'or',
-    'xor',
-    '^',
-    'sqrt',
-    'log10',
-    'ceil',
-    'floor',
-    'round',
-    'abs',
-    'sin',
-    'cos',
-    'tan',
-    'asin',
-    'acos',
-    'atan',
-    'sinh',
-    'cosh',
-    'tanh',
-    'atan2',
-    'classify'
-  ]
 
   advancedOps: {
     [key: string]: (node: any) => Operation
@@ -164,16 +131,13 @@ export class ExpressionParser {
   operationFromMathNode(node: any, collapseable: boolean = true): Operation {
     // Both OperatorNode and FunctionNode MathJS node types get converted to
     // MAML Operations.
-    if (node.type === 'OperatorNode' && this.validOps.indexOf(node.op) >= 0) {
+    if (node.type === 'OperatorNode' && ops.indexOf(node.op) >= 0) {
       return new Operation(
         node.op,
         this.transformOperatorArgs(node),
         collapseable
       )
-    } else if (
-      node.type === 'FunctionNode' &&
-      this.validOps.indexOf(node.fn.name) >= 0
-    ) {
+    } else if (node.type === 'FunctionNode' && ops.indexOf(node.fn.name) >= 0) {
       if (this.advancedOps.hasOwnProperty(node.fn.name)) {
         return this.advancedOps[node.fn.name](node)
       }

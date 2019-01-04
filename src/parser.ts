@@ -1,5 +1,6 @@
+import uuidv4 from 'uuid/v4'
+import { ops } from './builtins'
+
 export class Parser {
-  parse(expression: string) {
-    return expression
-  }
+  expression: String
 }
