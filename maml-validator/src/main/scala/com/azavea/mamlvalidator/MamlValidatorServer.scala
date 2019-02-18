@@ -18,7 +18,7 @@ object ServerStream {
 
   def stream[F[_]: ConcurrentEffect: Timer]: fs2.Stream[F, ExitCode] =
     BlazeServerBuilder[F]
-      .bindHttp(8080, "0.0.0.0")
+      .bindHttp(8801, "0.0.0.0")
       .withHttpApp(
         Router(
           "/" -> mamlValidatorRoutes
