@@ -1,358 +1,359 @@
-import { Tokenizer, TokenType } from '../src/tokenizer'
+import { Tokenizer } from "../src/tokenizer";
+import TokenType from "../src/tokenType";
 
-describe('Tokenizer Tests', () => {
-  const tokenizer = new Tokenizer()
+describe("Tokenizer Tests", () => {
+  const tokenizer = new Tokenizer();
 
-  describe('Tokenizing a single token:\n\t', () => {
-    it('should tokenize whitespace', () => {
-      const t = tokenizer.tokenize('    ')
+  describe("Tokenizing a single token:\n\t", () => {
+    it("should tokenize whitespace", () => {
+      const t = tokenizer.tokenize("    ");
 
       expect(t).toEqual([
         {
-          value: '    ',
+          value: "    ",
           type: TokenType.Whitespace,
           bp: 0
         }
-      ])
-    })
+      ]);
+    });
 
-    it('should tokenize an identifier', () => {
-      const t = tokenizer.tokenize('ABC')
+    it("should tokenize an identifier", () => {
+      const t = tokenizer.tokenize("ABC");
 
       expect(t).toEqual([
         {
-          value: 'ABC',
+          value: "ABC",
           type: TokenType.Identifier,
           bp: 0
         }
-      ])
-    })
+      ]);
+    });
 
-    it('should throw on an invalid character', () => {
-      expect(() => tokenizer.tokenize('$')).toThrow()
-    })
+    it("should throw on an invalid character", () => {
+      expect(() => tokenizer.tokenize("$")).toThrow();
+    });
 
-    it('should tokenize an operation', () => {
-      const t = tokenizer.tokenize('+')
+    it("should tokenize an operation", () => {
+      const t = tokenizer.tokenize("+");
 
       expect(t).toEqual([
         {
-          value: '+',
+          value: "+",
           type: TokenType.Operator,
           bp: 10
         }
-      ])
-    })
-  })
+      ]);
+    });
+  });
 
-  describe('Tokenizing expressions:\n\t', () => {
-    it('should tokenize a simple statement - 1', () => {
-      const t = tokenizer.tokenize('NIR+R')
+  describe("Tokenizing expressions:\n\t", () => {
+    it("should tokenize a simple statement - 1", () => {
+      const t = tokenizer.tokenize("NIR+R");
 
       expect(t).toEqual([
         {
-          value: 'NIR',
+          value: "NIR",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: '+',
+          value: "+",
           type: TokenType.Operator,
           bp: 10
         },
         {
-          value: 'R',
+          value: "R",
           type: TokenType.Identifier,
           bp: 0
         }
-      ])
-    })
+      ]);
+    });
 
-    it('should tokenize a simple statement - 2', () => {
-      const t = tokenizer.tokenize('(NIR+R)')
+    it("should tokenize a simple statement - 2", () => {
+      const t = tokenizer.tokenize("(NIR+R)");
 
       expect(t).toEqual([
         {
-          value: '(',
+          value: "(",
           type: TokenType.GroupingStart,
           bp: 0
         },
         {
-          value: 'NIR',
+          value: "NIR",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: '+',
+          value: "+",
           type: TokenType.Operator,
           bp: 10
         },
         {
-          value: 'R',
+          value: "R",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: ')',
+          value: ")",
           type: TokenType.GroupingEnd,
           bp: 0
         }
-      ])
-    })
+      ]);
+    });
 
-    it('should tokenize a complex statement - 1', () => {
-      const t = tokenizer.tokenize('(NIR-R)/(NIR + R)')
+    it("should tokenize a complex statement - 1", () => {
+      const t = tokenizer.tokenize("(NIR-R)/(NIR + R)");
 
       expect(t).toEqual([
         {
-          value: '(',
+          value: "(",
           type: TokenType.GroupingStart,
           bp: 0
         },
         {
-          value: 'NIR',
+          value: "NIR",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: '-',
+          value: "-",
           type: TokenType.Operator,
           bp: 10
         },
         {
-          value: 'R',
+          value: "R",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: ')',
+          value: ")",
           type: TokenType.GroupingEnd,
           bp: 0
         },
         {
-          value: '/',
+          value: "/",
           type: TokenType.Operator,
           bp: 100
         },
         {
-          value: '(',
+          value: "(",
           type: TokenType.GroupingStart,
           bp: 0
         },
         {
-          value: 'NIR',
+          value: "NIR",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '+',
+          value: "+",
           type: TokenType.Operator,
           bp: 10
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: 'R',
+          value: "R",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: ')',
+          value: ")",
           type: TokenType.GroupingEnd,
           bp: 0
         }
-      ])
-    })
+      ]);
+    });
 
-    it('should tokenize a complex statement - 2', () => {
+    it("should tokenize a complex statement - 2", () => {
       const t = tokenizer.tokenize(
-        'classify((NIR-R)/(NIR + R), { 0 -> 0, 1.2 -> 1 })'
-      )
+        "classify((NIR-R)/(NIR + R), { 0 -> 0, 1.2 -> 1 })"
+      );
 
       expect(t).toEqual([
         {
-          value: 'classify',
+          value: "classify",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: '(',
+          value: "(",
           type: TokenType.GroupingStart,
           bp: 0
         },
         {
-          value: '(',
+          value: "(",
           type: TokenType.GroupingStart,
           bp: 0
         },
         {
-          value: 'NIR',
+          value: "NIR",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: '-',
+          value: "-",
           type: TokenType.Operator,
           bp: 10
         },
         {
-          value: 'R',
+          value: "R",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: ')',
+          value: ")",
           type: TokenType.GroupingEnd,
           bp: 0
         },
         {
-          value: '/',
+          value: "/",
           type: TokenType.Operator,
           bp: 100
         },
         {
-          value: '(',
+          value: "(",
           type: TokenType.GroupingStart,
           bp: 0
         },
         {
-          value: 'NIR',
+          value: "NIR",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '+',
+          value: "+",
           type: TokenType.Operator,
           bp: 10
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: 'R',
+          value: "R",
           type: TokenType.Identifier,
           bp: 0
         },
         {
-          value: ')',
+          value: ")",
           type: TokenType.GroupingEnd,
           bp: 0
         },
         {
-          value: ',',
+          value: ",",
           type: TokenType.ArgumentDelimiter,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '{',
+          value: "{",
           type: TokenType.BlockStart,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '0',
+          value: "0",
           type: TokenType.Constant,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '->',
+          value: "->",
           type: TokenType.AssociativeMapping,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '0',
+          value: "0",
           type: TokenType.Constant,
           bp: 0
         },
         {
-          value: ',',
+          value: ",",
           type: TokenType.ArgumentDelimiter,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '1.2',
+          value: "1.2",
           type: TokenType.Constant,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '->',
+          value: "->",
           type: TokenType.AssociativeMapping,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '1',
+          value: "1",
           type: TokenType.Constant,
           bp: 0
         },
         {
-          value: ' ',
+          value: " ",
           type: TokenType.Whitespace,
           bp: 0
         },
         {
-          value: '}',
+          value: "}",
           type: TokenType.BlockEnd,
           bp: 0
         },
         {
-          value: ')',
+          value: ")",
           type: TokenType.GroupingEnd,
           bp: 0
         }
-      ])
+      ]);
 
-      expect(t.map(t => t.toString()).join('')).toEqual(
-        'classify((NIR-R)/(NIR + R), { 0 -> 0, 1.2 -> 1 })'
-      )
-    })
-  })
-})
+      expect(t.map(t => t.toString()).join("")).toEqual(
+        "classify((NIR-R)/(NIR + R), { 0 -> 0, 1.2 -> 1 })"
+      );
+    });
+  });
+});
